@@ -1,0 +1,8 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+xgboost
+mlflow==2.19.0
+joblib
