@@ -18,7 +18,7 @@ jobs:
     steps:
 
       # ======================================================
-      # SETUP JOB
+      # CHECKOUT REPOSITORY
       # ======================================================
 
       - name: Run actions/checkout@v3
@@ -34,6 +34,15 @@ jobs:
           python-version: '3.12.7'
 
       # ======================================================
+      # INSTALL DEPENDENCIES
+      # ======================================================
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ======================================================
       # CHECK ENV
       # ======================================================
 
@@ -44,15 +53,6 @@ jobs:
           mlflow --version
 
       # ======================================================
-      # INSTALL DEPENDENCIES
-      # ======================================================
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # ======================================================
       # RUN MLFLOW PROJECT
       # ======================================================
 
@@ -61,7 +61,7 @@ jobs:
           python modelling.py
 
       # ======================================================
-      # GET RUN ID
+      # GET LATEST RUN ID
       # ======================================================
 
       - name: Get latest MLflow run_id
@@ -77,7 +77,7 @@ jobs:
           pip install mlflow
 
       # ======================================================
-      # UPLOAD
+      # UPLOAD ARTIFACT
       # ======================================================
 
       - name: Upload to Google Drive
@@ -85,7 +85,7 @@ jobs:
           echo "Upload artifact placeholder"
 
       # ======================================================
-      # BUILD DOCKER
+      # BUILD DOCKER IMAGE
       # ======================================================
 
       - name: Build Docker Model
@@ -93,7 +93,7 @@ jobs:
           docker build -t churn-msml .
 
       # ======================================================
-      # LOGIN DOCKER
+      # LOGIN DOCKER HUB
       # ======================================================
 
       - name: Log in to Docker Hub
@@ -103,7 +103,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # ======================================================
-      # TAG IMAGE
+      # TAG DOCKER IMAGE
       # ======================================================
 
       - name: Tag Docker Image
@@ -111,7 +111,7 @@ jobs:
           docker tag churn-msml ${{ secrets.DOCKER_USERNAME }}/churn-msml:latest
 
       # ======================================================
-      # PUSH IMAGE
+      # PUSH DOCKER IMAGE
       # ======================================================
 
       - name: Push Docker Image
