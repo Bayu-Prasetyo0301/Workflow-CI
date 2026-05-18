@@ -1,13 +1,8 @@
-# =========================================================
-# MODELLING MACHINE LEARNING
-# =========================================================
-
 import pandas as pd
 import mlflow
 import mlflow.sklearn
 
 from sklearn.model_selection import train_test_split
-
 from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.metrics import (
@@ -21,23 +16,11 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# =========================================================
-# SET EXPERIMENT
-# =========================================================
-
 mlflow.set_experiment(
     "Customer Churn Modelling"
 )
 
-# =========================================================
-# ENABLE AUTOLOG
-# =========================================================
-
 mlflow.autolog()
-
-# =========================================================
-# LOAD DATASET
-# =========================================================
 
 df = pd.read_csv(
     "Churn_Modelling_preprocessing.csv"
@@ -49,20 +32,12 @@ print("=" * 50)
 
 print(df.head())
 
-# =========================================================
-# FEATURES & TARGET
-# =========================================================
-
 X = df.drop(
     "Exited",
     axis=1
 )
 
 y = df["Exited"]
-
-# =========================================================
-# DATA SPLITTING
-# =========================================================
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -79,103 +54,73 @@ print("=" * 50)
 print(f"X_train shape : {X_train.shape}")
 print(f"X_test shape  : {X_test.shape}")
 
-# =========================================================
-# START MLFLOW RUN
-# =========================================================
+model = RandomForestClassifier(
+    n_estimators=200,
+    max_depth=10,
+    random_state=42
+)
 
-with mlflow.start_run():
+model.fit(
+    X_train,
+    y_train
+)
 
-    # =====================================================
-    # BUILD MODEL
-    # =====================================================
+y_pred = model.predict(
+    X_test
+)
 
-    model = RandomForestClassifier(
-        n_estimators=200,
-        max_depth=10,
-        random_state=42
-    )
+accuracy = accuracy_score(
+    y_test,
+    y_pred
+)
 
-    # =====================================================
-    # TRAIN MODEL
-    # =====================================================
+precision = precision_score(
+    y_test,
+    y_pred
+)
 
-    model.fit(
-        X_train,
-        y_train
-    )
+recall = recall_score(
+    y_test,
+    y_pred
+)
 
-    # =====================================================
-    # PREDICTION
-    # =====================================================
+f1 = f1_score(
+    y_test,
+    y_pred
+)
 
-    y_pred = model.predict(
-        X_test
-    )
+print("\n" + "=" * 50)
+print("MODEL EVALUATION")
+print("=" * 50)
 
-    # =====================================================
-    # EVALUATION
-    # =====================================================
+print(f"Accuracy  : {accuracy:.4f}")
+print(f"Precision : {precision:.4f}")
+print(f"Recall    : {recall:.4f}")
+print(f"F1 Score  : {f1:.4f}")
 
-    accuracy = accuracy_score(
-        y_test,
-        y_pred
-    )
+cm = confusion_matrix(
+    y_test,
+    y_pred
+)
 
-    precision = precision_score(
-        y_test,
-        y_pred
-    )
+plt.figure(figsize=(6, 4))
 
-    recall = recall_score(
-        y_test,
-        y_pred
-    )
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt='d',
+    cmap='Blues'
+)
 
-    f1 = f1_score(
-        y_test,
-        y_pred
-    )
+plt.title("Training Confusion Matrix")
 
-    print("\n" + "=" * 50)
-    print("MODEL EVALUATION")
-    print("=" * 50)
+plt.tight_layout()
 
-    print(f"Accuracy  : {accuracy:.4f}")
-    print(f"Precision : {precision:.4f}")
-    print(f"Recall    : {recall:.4f}")
-    print(f"F1 Score  : {f1:.4f}")
+plt.savefig(
+    "training_confusion_matrix.png"
+)
 
-    # =====================================================
-    # CONFUSION MATRIX
-    # =====================================================
-
-    cm = confusion_matrix(
-        y_test,
-        y_pred
-    )
-
-    plt.figure(figsize=(6, 4))
-
-    sns.heatmap(
-        cm,
-        annot=True,
-        fmt='d',
-        cmap='Blues'
-    )
-
-    plt.title("Training Confusion Matrix")
-
-    plt.tight_layout()
-
-    plt.savefig(
-        "training_confusion_matrix.png"
-    )
-
-    plt.close()
-
-# =========================================================
-# FINISH
-# =========================================================
+plt.close()
 
 print("\n" + "=" * 50)
 print("MODELLING SELESAI")
