@@ -5,4 +5,12 @@ seaborn
 scikit-learn
 xgboost
 mlflow==2.19.0
+dagshub
 joblib
+cloudpickle
+psutil
+scipy
+flask
+gunicorn
+prometheus_client
+requests

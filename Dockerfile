@@ -2,7 +2,7 @@ FROM python:3.12.7
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY MLProject/requirements.txt .
 
 RUN pip install --upgrade pip
 
@@ -10,6 +10,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
-
-CMD ["python", "modelling.py"]
+CMD ["python", "MLProject/modelling.py"]

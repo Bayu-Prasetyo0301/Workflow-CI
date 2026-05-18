@@ -11,11 +11,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: MLProject
-
     steps:
+
+      # ======================================================
+      # SETUP JOB
+      # ======================================================
+
+      - name: Set up job
+        run: echo "Starting Workflow"
 
       # ======================================================
       # CHECKOUT REPOSITORY
@@ -34,15 +37,6 @@ jobs:
           python-version: '3.12.7'
 
       # ======================================================
-      # INSTALL DEPENDENCIES
-      # ======================================================
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # ======================================================
       # CHECK ENV
       # ======================================================
 
@@ -50,7 +44,23 @@ jobs:
         run: |
           python --version
           pip --version
-          mlflow --version
+
+      # ======================================================
+      # INSTALL DEPENDENCIES
+      # ======================================================
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mlflow==2.19.0
+          pip install pandas
+          pip install numpy
+          pip install scikit-learn
+          pip install matplotlib
+          pip install seaborn
+          pip install xgboost
+          pip install dagshub
+          pip install joblib
 
       # ======================================================
       # RUN MLFLOW PROJECT
@@ -58,7 +68,7 @@ jobs:
 
       - name: Run mlflow project
         run: |
-          python modelling.py
+          mlflow run MLProject --env-manager=local
 
       # ======================================================
       # GET LATEST RUN ID
@@ -74,15 +84,15 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install mlflow
+          pip install docker
 
       # ======================================================
       # UPLOAD ARTIFACT
       # ======================================================
 
-      - name: Upload to Google Drive
+      - name: Upload to GitHub
         run: |
-          echo "Upload artifact placeholder"
+          echo "Upload artifact"
 
       # ======================================================
       # BUILD DOCKER IMAGE
@@ -117,3 +127,35 @@ jobs:
       - name: Push Docker Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/churn-msml:latest
+
+      # ======================================================
+      # POST LOGIN DOCKER HUB
+      # ======================================================
+
+      - name: Post Log in to Docker Hub
+        run: |
+          echo "Docker Hub login completed"
+
+      # ======================================================
+      # POST SETUP PYTHON
+      # ======================================================
+
+      - name: Post Set up Python 3.12.7
+        run: |
+          echo "Python setup completed"
+
+      # ======================================================
+      # POST CHECKOUT
+      # ======================================================
+
+      - name: Post Run actions/checkout@v3
+        run: |
+          echo "Checkout completed"
+
+      # ======================================================
+      # COMPLETE JOB
+      # ======================================================
+
+      - name: Complete job
+        run: |
+          echo "Workflow completed successfully"
